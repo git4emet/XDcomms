@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DoinBetter - Celebrate Your Impact</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #ff6b6b, #ffa500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #ff6b6b;
+        }
+
+        .cart-icon {
+            position: relative;
+            background: linear-gradient(45deg, #ff6b6b, #ffa500);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 50%;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #4ecdc4;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .hero::before {
+            content: '🎉✨🌟💫🎊';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            font-size: clamp(2rem, 5vw, 4rem);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            opacity: 0.1;
+            animation: celebrate 10s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes celebrate {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-20px) rotate(5deg); }
+            50% { transform: translateY(0) rotate(0deg); }
+            75% { transform: translateY(-10px) rotate(-5deg); }
+        }
+
+        .hero-content {
+            z-index: 1;
+            max-width: 800px;
+            padding: 0 2rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .section {
+            padding: 4rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 3rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 20px;
+            padding: 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .product-image {
+            height: 250px;
+            background: linear-gradient(45deg, #a8edea, #fed6e3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-image::before {
+            content: attr(data-text);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1rem;
+            font-weight: 600;
+            text-shadow: none;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            margin-top: 2rem;
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .product-description {
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #ff6b6b;
+            margin-bottom: 1rem;
+        }
+
+        .add-to-cart {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(45deg, #ff6b6b, #ffa500);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-to-cart:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .featured-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 30px;
+            padding: 4rem 2rem;
+            margin: 4rem 0;
+            text-align: center;
+        }
+
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .featured-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stats-section {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 3rem 0;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .stat-item {
+            padding: 1.5rem;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #ff6b6b;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .cta-section {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: white;
+            color: #4ecdc4;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin: 0 0.5rem;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .floating-cart {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: linear-gradient(45deg, #ff6b6b, #ffa500);
+            color: white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 50;
+        }
+
+        .floating-cart:hover {
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-content">
+            <div class="logo">DoinBetter</div>
+            <div class="nav-links">
+                <a href="https://WeARE.DoinBetter.org/Together.html">Community</a>
+                <a href="#featured">Featured</a>
+                <a href="#products">Shop</a>
+                <a href="#custom">Custom</a>
+                <a href="#" class="cart-icon">🛒<span class="cart-count">0</span></a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Celebrate Your Impact</h1>
+            <p>Turn your positive actions into beautiful merchandise that inspires others and supports your journey</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="stats-section">
+            <h2>Your Impact, Visualized</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">$42,183</div>
+                    <div class="stat-label">Donated to Good Causes</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="featured">
+        <div class="featured-section">
+            <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">Featured Community Creations</h2>
+            <p style="font-size: 1.2rem; opacity: 0.9;">Graphics born from real positive actions, now celebrating victories worldwide</p>
+            
+            <div class="featured-grid">
+                <div class="featured-item">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🌱</div>
+                    <h3>"Seeds of Change"</h3>
+                    <p>Created after a community tree-planting event that earned 2,500 CRED</p>
+                </div>
+                <div class="featured-item">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🤝</div>
+                    <h3>"Helping Hands"</h3>
+                    <p>Born from a neighborhood meal delivery program</p>
+                </div>
+                <div class="featured-item">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📚</div>
+                    <h3>"Knowledge Flows"</h3>
+                    <p>Inspired by literacy programs reaching 500+ people</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="products">
+        <h2 class="section-title">Wear Your Impact</h2>
+        <p style="text-align: center; font-size: 1.2rem; color: #666; margin-bottom: 3rem;">
+            Every purchase supports the platform and celebrates positive change in the world
+        </p>
+
+        <div class="product-grid">
+            <div class="product-card">
+                <div class="product-image" data-text="Your CRED graphic here">👕</div>
+                <div class="product-info">
+                    <h3 class="product-title">Impact T-Shirt</h3>
+                    <p class="product-description">Soft cotton tee featuring your personal DoinBetter graphic. Each shirt celebrates a real positive action from our community.</p>
+                    <div class="product-price">$24.99</div>
+                    <button class="add-to-cart" onclick="addToCart('Impact T-Shirt', 24.99)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image" data-text="Custom community art">🎒</div>
+                <div class="product-info">
+                    <h3 class="product-title">Change-Maker Tote</h3>
+                    <p class="product-description">Durable canvas tote featuring community-created graphics. Perfect for groceries while spreading positive vibes.</p>
+                    <div class="product-price">$18.99</div>
+                    <button class="add-to-cart" onclick="addToCart('Change-Maker Tote', 18.99)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image" data-text="Motivational graphics">☕</div>
+                <div class="product-info">
+                    <h3 class="product-title">Morning Motivation Mug</h3>
+                    <p class="product-description">Start your day with inspiration. Features rotating graphics from high-CRED community actions.</p>
+                    <div class="product-price">$16.99</div>
+                    <button class="add-to-cart" onclick="addToCart('Morning Motivation Mug', 16.99)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image" data-text="Achievement display">🖼️</div>
+                <div class="product-info">
+                    <h3 class="product-title">Victory Print</h3>
+                    <p class="product-description">High-quality poster of your biggest CRED-earning moment. Perfect for home or office inspiration.</p>
+                    <div class="product-price">$29.99</div>
+                    <button class="add-to-cart" onclick="addToCart('Victory Print', 29.99)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image" data-text="Wearable impact">📱</div>
+                <div class="product-info">
+                    <h3 class="product-title">Impact Phone Case</h3>
+                    <p class="product-description">Protect your phone while showcasing your positive impact. Durable case with your custom CRED graphic.</p>
+                    <div class="product-price">$22.99</div>
+                    <button class="add-to-cart" onclick="addToCart('Impact Phone Case', 22.99)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image" data-text="Community spirit">🎓</div>
+                <div class="product-info">
+                    <h3 class="product-title">DoinBetter Cap</h3>
+                    <p class="product-description">Adjustable cap featuring the latest community achievement graphics. Wear your community pride.</p>
+                    <div class="product-price">$19.99</div>
+                    <button class="add-to-cart" onclick="addToCart('DoinBetter Cap', 19.99)">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="custom">
+        <div class="cta-section">
+            <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">Create Your Custom Celebration</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 2rem;">
+                Got a special CRED moment? Let's turn it into something beautiful you can wear, share, and treasure.
+            </p>
+            <a href="#" class="cta-button">Design Custom Item</a>
+            <a href="#" class="cta-button">Browse Community Designs</a>
+        </div>
+    </section>
+
+    <section class="section">
+        <div style="background: white; border-radius: 20px; padding: 3rem; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+            <h2 style="color: #333; margin-bottom: 2rem;">How It Works</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+                <div style="padding: 1.5rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">✨</div>
+                    <h3 style="color: #333; margin-bottom: 1rem;">Do Good, Earn CRED</h3>
+                    <p style="color: #666;">Take positive action in your community and log it on DoinBetter.org</p>
+                </div>
+                <div style="padding: 1.5rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🎨</div>
+                    <h3 style="color: #333; margin-bottom: 1rem;">Graphics Generated</h3>
+                    <p style="color: #666;">Our platform creates beautiful graphics celebrating your impact</p>
+                </div>
+                <div style="padding: 1.5rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🛍️</div>
+                    <h3 style="color: #333; margin-bottom: 1rem;">Celebrate & Share</h3>
+                    <p style="color: #666;">Turn your graphics into merchandise that supports your continued good work</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="floating-cart" onclick="toggleCart()">
+        🛒
+        <span class="cart-count" id="floatingCartCount">0</span>
+    </div>
+
+    <!-- Simple Cart Modal -->
+    <div id="cartModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 200; padding: 2rem;">
+        <div style="background: white; border-radius: 20px; max-width: 600px; margin: 2rem auto; padding: 2rem; max-height: 80vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2>Your Impact Cart</h2>
+                <button onclick="toggleCart()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
+            </div>
+            <div id="cartItems"></div>
+            <div style="border-top: 2px solid #eee; padding-top: 1rem; margin-top: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <strong>Total: $<span id="cartTotal">0.00</span></strong>
+                </div>
+                <button style="width: 100%; padding: 1rem; background: linear-gradient(45deg, #4ecdc4, #44a08d); color: white; border: none; border-radius: 15px; font-weight: 600; font-size: 1rem; cursor: pointer;">
+                    Checkout & Continue DoinBetter
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let cart = [];
+        let cartTotal = 0;
+
+        function addToCart(name, price) {
+            cart.push({ name, price });
+            updateCartDisplay();
+            
+            // Show success animation
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = '✓ Added!';
+            button.style.background = 'linear-gradient(45deg, #4ecdc4, #44a08d)';
+            
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.background = 'linear-gradient(45deg, #ff6b6b, #ffa500)';
+            }, 1500);
+        }
+
+        function updateCartDisplay() {
+            const cartCount = document.querySelector('.cart-count');
+            const floatingCartCount = document.getElementById('floatingCartCount');
+            
+            cartCount.textContent = cart.length;
+            floatingCartCount.textContent = cart.length;
+            
+            // Update cart modal
+            const cartItems = document.getElementById('cartItems');
+            const cartTotalElement = document.getElementById('cartTotal');
+            
+            cartTotal = cart.reduce((sum, item) => sum + item.price, 0);
+            
+            cartItems.innerHTML = cart.map((item, index) => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid #eee;">
+                    <div>
+                        <h4>${item.name}</h4>
+                        <p style="color: #666;">${item.price.toFixed(2)}</p>
+                    </div>
+                    <button onclick="removeFromCart(${index})" style="background: #ff6b6b; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer;">×</button>
+                </div>
+            `).join('');
+            
+            cartTotalElement.textContent = cartTotal.toFixed(2);
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartDisplay();
+        }
+
+        function toggleCart() {
+            const modal = document.getElementById('cartModal');
+            modal.style.display = modal.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Close cart when clicking outside
+        document.getElementById('cartModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                toggleCart();
+            }
+        });
+
+        // Animate product cards on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all product cards
+        document.addEventListener('DOMContentLoaded', () => {
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(card);
+            });
+        });
+
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html> class="stat-number">15,429</div>
+                    <div class="stat-label">Graphics Created</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">89,547</div>
+                    <div class="stat-label">CRED Earned</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">3,291</div>
+                    <div class="stat-label">Products Sold</div>
+                </div>
+                <div class="stat-item">
+                    <div

@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeARE DoinBetter - Together</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>') repeat;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .hero-content {
+            z-index: 1;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #fff, #f0f8ff, #e6f3ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, #ff6b6b, #ffa500);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(255, 107, 107, 0.4);
+        }
+
+        .section {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .cred-system {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+            border-radius: 30px;
+            padding: 3rem;
+            margin: 3rem 0;
+            text-align: center;
+        }
+
+        .cred-counter {
+            font-size: 4rem;
+            font-weight: 800;
+            color: #667eea;
+            margin: 1rem 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .action-feed {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .action-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid #ff6b6b;
+            transition: all 0.3s ease;
+        }
+
+        .action-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(5px);
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: floatShapes 15s infinite linear;
+        }
+
+        @keyframes floatShapes {
+            0% { transform: translateY(100vh) rotate(0deg); }
+            100% { transform: translateY(-100px) rotate(360deg); }
+        }
+
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            z-index: 100;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: white;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.7;
+        }
+
+        .leaderboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .leaderboard-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .leaderboard-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .leaderboard-header {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .leaderboard-icon {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .leaderboard-header h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .leaderboard-header p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            color: #fff;
+        }
+
+        .leaderboard-entries {
+            padding: 1rem;
+        }
+
+        .leaderboard-entry {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-entry:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .leaderboard-entry.rank-1 {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .leaderboard-entry.rank-2 {
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.2), rgba(192, 192, 192, 0.1));
+            border: 1px solid rgba(192, 192, 192, 0.3);
+        }
+
+        .leaderboard-entry.rank-3 {
+            background: linear-gradient(135deg, rgba(205, 127, 50, 0.2), rgba(205, 127, 50, 0.1));
+            border: 1px solid rgba(205, 127, 50, 0.3);
+        }
+
+        .rank {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            min-width: 40px;
+        }
+
+        .entry-info {
+            flex: 1;
+        }
+
+        .entry-info strong {
+            display: block;
+            color: #fff;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .entry-info p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .cred-badge {
+            background: linear-gradient(45deg, #ff6b6b, #ffa500);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .abundance-reminder {
+            animation: gentleGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes gentleGlow {
+            0%, 100% { box-shadow: 0 5px 20px rgba(255, 193, 7, 0.3); }
+            50% { box-shadow: 0 5px 30px rgba(255, 193, 7, 0.5); }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes">
+        <div class="shape" style="left: 10%; animation-delay: 0s;">🌟</div>
+        <div class="shape" style="left: 20%; animation-delay: 2s;">💫</div>
+        <div class="shape" style="left: 30%; animation-delay: 4s;">✨</div>
+        <div class="shape" style="left: 40%; animation-delay: 6s;">🌟</div>
+        <div class="shape" style="left: 50%; animation-delay: 8s;">💫</div>
+        <div class="shape" style="left: 60%; animation-delay: 10s;">✨</div>
+        <div class="shape" style="left: 70%; animation-delay: 12s;">🌟</div>
+        <div class="shape" style="left: 80%; animation-delay: 14s;">💫</div>
+        <div class="shape" style="left: 90%; animation-delay: 16s;">✨</div>
+    </div>
+
+    <nav class="nav">
+        <div class="nav-content">
+            <div class="logo">WeARE.DoinBetter</div>
+            <div class="nav-links">
+                <a href="#community">Community</a>
+                <a href="#learn">Learn</a>
+                <a href="#actions">Actions</a>
+                <a href="/Here.html">Celebrate</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Together We Rise</h1>
+            <p>Where thinking meets action, learning sparks change, and community celebrates progress</p>
+            <a href="#community" class="cta-button pulse">Join the Movement</a>
+        </div>
+    </section>
+
+    <section class="section" id="community">
+        <div class="cred-system">
+            <h2>Your Impact Counter</h2>
+            <div class="cred-counter" id="credCounter">2,847</div>
+            <p>CRED earned by our community today through positive actions</p>
+            <p><strong>Your CRED:</strong> Log your good deed → Earn CRED → Find others doing similar → Bonus CRED!</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <span class="feature-icon">🧠</span>
+                <h3>Think Together</h3>
+                <p>Join discussions, share insights, and explore ideas that make our world better. Every perspective matters in our journey toward positive change.</p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">📚</span>
+                <h3>Learn & Grow</h3>
+                <p>Access resources, tutorials, and wisdom from our community. Knowledge shared is knowledge multiplied.</p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">🤝</span>
+                <h3>Connect Anonymously</h3>
+                <p>Find your tribe without the pressure. Connect based on actions and values, not profiles or personas.</p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">🎉</span>
+                <h3>Celebrate Wins</h3>
+                <p>Every positive action deserves recognition. Share your victories and inspire others to join the movement.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="leaderboards">
+        <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 1rem;">DoinBetter Leaderboards</h2>
+        <p style="text-align: center; font-size: 1.2rem; margin-bottom: 3rem; opacity: 0.9;">
+            Where abundance thinking meets creative genius - celebrating the art of seeing opportunity everywhere!
+        </p>
+        
+        <div class="leaderboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+            
+            <!-- Most Creative "Waste" Transformers -->
+            <div class="leaderboard-card">
+                <div class="leaderboard-header">
+                    <span class="leaderboard-icon">♻️✨</span>
+                    <h3>Trash-to-Treasure Champions</h3>
+                    <p>Most creative uses for "worthless" materials</p>
+                </div>
+                <div class="leaderboard-entries">
+                    <div class="leaderboard-entry rank-1">
+                        <span class="rank">🥇</span>
+                        <div class="entry-info">
+                            <strong>Anonymous Genius</strong>
+                            <p>Pizza boxes → Community Little Free Libraries</p>
+                            <span class="cred-badge">+2,847 CRED</span>
+                        </div>
+                    </div>
+                    <div class="leaderboard-entry rank-2">
+                        <span class="rank">🥈</span>
+                        <div class="entry-info">
+                            <strong>Straw Wrapper Wizard</strong>
+                            <p>Straw wrappers → Biodegradable seed tape for gardens</p>
+                            <span class="cred-badge">+2,134 CRED</span>
+                        </div>
+                    </div>
+                    <div class="leaderboard-entry rank-3">
+                        <span class="rank">🥉</span>
+                        <div class="entry-info">
+                            <strong>Pop Bottle Pioneer</strong>
+                            <p>Bottles → Self-watering planters for seniors</p>
+                            <span class="cred-badge">+1,899 CRED</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Silver Lining Spotters -->
+            <div class="leaderboard-card">
+                <div class="leaderboard-header">
+                    <span class="leaderboard-icon">🌟💡</span>
+                    <h3>Silver Lining Spotters</h3>
+                    <p>Most opportunities found in shortest time</p>
+                </div>
+                <div class="leaderboard-entries">
+                    <div class="leaderboard-entry rank-1">
+                        <span class="rank">🥇</span>
+                        <div class="entry-info">
+                            <strong>Opportunity Eagle</strong>
+                            <p>47 silver linings found in 1 hour</p>
+                            <span class="cred-badge">+3,291 CRED</span>
+                        </div>
+                    </div>
+                    <div class="leaderboard-entry rank-2">
+                        <span class="rank">🥈</span>
+                        <div class="entry-info">
+                            <strong>Positive Vision Pro</strong>
+                            <p>31 opportunities spotted in 45 mins</p>
+                            <span class="cred-badge">+2,756 CRED</span>
+                        </div>
+                    </div>
+                    <div class="leaderboard-entry rank-3">
+                        <span class="rank">🥉</span>
+                        <div class="entry-info">
+                            <strong>Hope Hunter</strong>
+                            <p>28 possibilities in 30 mins</p>
+                            <span class="cred-badge">+2,103 CRED</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Biggest Team Builders -->
+            <div class="leaderboard-card">
+                <div class="leaderboard-header">
+                    <span class="leaderboard-icon">🤝🚀</span>
+                    <h3>Mega Team Builders</h3>
+                    <p>Largest teams assembled for good</p>
+                </div>
+                <div class="leaderboard-entries">
+                    <div class="leaderboard-entry rank-1">
+                        <span class="rank">🥇</span>
+                        <div class="entry-info">
+                            <strong>Community Catalyst</strong>
+                            <p>847 people • Beach cleanup network</p>
+                            <span class="cred-badge">+8,470 CRED</span>
+                        </div>
+                    </div>
+                    <div class="leaderboard-entry rank-2">
+                        <span class="rank">🥈</span>
+                        <div class="entry-info">
+                            <strong>Unity Builder</strong>
+                            <p>623 people • Food rescue coalition</p>
+                            <span class="cred-badge">+6,230 CRED</span>
+                        </div>
+                    </div>
+                    <div class="leaderboard-entry rank-3">
+                        <span class="rank">🥉</span>
+                        <div class="entry-info">
+                            <strong>Connection Creator</strong>
+                            <p>445 people • Skills sharing network</p>
+                            <span class="cred-badge">+4,450 CRED</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Multi-Team Champions -->
+            <div class="leaderboard-card">
+                <div class="leaderboard-header">
+                    <span class="leaderboard-icon">🎯🔗</span>
+                    <h3>Multi-Team Champions</h3>
+                    <p>Teams with most cross-team members</p>
+                </div>
+                <div class="leaderboard-entries">
+                    <div class="leaderboard-entry rank-1">
+                        <span class="rank">🥇</span>
+                        <div class="entry-info">
+                            <strong>The Connectors</strong>
+                            <p>89% members active in 3+ other teams</p>
+                            <span class="cred-badge">+5,647 CRED</span>
+                        </div>
+                    </div>
+                    <div class="leaderboard-entry rank-2">
+                        <span class="rank">🥈</span>
+                        <div class="entry-info">
+                            <strong>Bridge Builders</strong>
+                            <p>74% cross-team collaboration rate</p>
+                            <span class="cred-badge">+4,921 CRED</span>
+                        </div>
+                    </div>
+                    <div class="leaderboard-entry rank-3">
+                        <span class="rank">🥉</span>
+                        <div class="entry-info">
+                            <strong>Network Weavers</strong>
+                            <p>68% multi-team participation</p>
+                            <span class="cred-badge">+3,847 CRED</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Business Opportunity Creators -->
+            <div class="leaderboard-card">
+                <div class="leaderboard-header">
+                    <span class="leaderboard-icon">💼✨</span>
+                    <h3>Opportunity Creators</h3>
+                    <p>Businesses creating most possibilities</p>
+                </div>
+                <div class="leaderboard-entries">
+                    <div class="leaderboard-entry rank-1">
+                        <span class="rank">🥇</span>
+                        <div class="entry-info">
+                            <strong>Abundance Enterprises</strong>
+                            <p>127 opportunities created this month</p>
+                            <span class="cred-badge">+12,700 CRED</span>
+                        </div>
+                    </div>
+                    <div class="leaderboard-entry rank-2">
+                        <span class="rank">🥈</span>
+                        <div class="entry-info">
+                            <strong>Possibility Partners</strong>
+                            <p>94 new pathways opened</p>
+                            <span class="cred-badge">+9,400 CRED</span>
+                        </div>
+                    </div>
+                    <div class="leaderboard-entry rank-3">
+                        <span class="rank">🥉</span>
+                        <div class="entry-info">
+                            <strong>Future Builders Co.</strong>
+                            <p>82 opportunities unlocked</p>
+                            <span class="cred-badge">+8,200 CRED</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Silliest Solutions -->
+            <div class="leaderboard-card">
+                <div class="leaderboard-header">
+                    <span class="leaderboard-icon">🤪🏆</span>
+                    <h3>Silliest Solutions</h3>
+                    <p>Most detailed uses for "useless" things</p>
+                </div>
+                <div class="leaderboard-entries">
+                    <div class="leaderboard-entry rank-1">
+                        <span class="rank">🥇</span>
+                        <div class="entry-info">
+                            <strong>Rubber Band Genius</strong>
+                            <p>143-step plan: bands → community trampolines</p>
+                            <span class="cred-badge">+1,430 CRED</span>
+                        </div>
+                    </div>
+                    <div class="leaderboard-entry rank-2">
+                        <span class="rank">🥈</span>
+                        <div class="entry-info">
+                            <strong>Paperclip Architect</strong>
+                            <p>87-step masterpiece: clips → playground equipment</p>
+                            <span class="cred-badge">+870 CRED</span>
+                        </div>
+                    </div>
+                    <div class="leaderboard-entry rank-3">
+                        <span class="rank">🥉</span>
+                        <div class="entry-info">
+                            <strong>Lint Engineer</strong>
+                            <p>62 detailed steps: dryer lint → insulation for birdhouses</p>
+                            <span class="cred-badge">+620 CRED</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="abundance-reminder" style="background: linear-gradient(135deg, #ffeaa7, #fab1a0); color: #2d3436; border-radius: 20px; padding: 2rem; text-align: center; margin: 2rem 0;">
+            <h3 style="font-size: 1.8rem; margin-bottom: 1rem;">🌍 "And God saw that it was good!" 🌟</h3>
+            <p style="font-size: 1.1rem; margin-bottom: 1rem;">
+                No such thing as waste - only opportunities we haven't discovered yet!
+            </p>
+            <p style="font-weight: 600;">
+                WeARE.DoinBetter.org • Together, reframing everything! 💫
+            </p>
+        </div>
+    </section>
+
+    <section class="section" id="actions">
+        <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 2rem;">Live Action Feed</h2>
+        
+        <div class="action-feed">
+            <div class="action-item">
+                <h4>♻️ Cardboard boxes → Mobile homeless shelters</h4>
+                <p>+156 CRED earned • 12 others building similar • Abundance thinking!</p>
+            </div>
+            
+            <div class="action-item">
+                <h4>🥤 Bottle caps → Therapy fidget tools</h4>
+                <p>+89 CRED earned • Helping kids with ADHD • Creative genius!</p>
+            </div>
+            
+            <div class="action-item">
+                <h4>📰 Old newspapers → Seedling pots for community garden</h4>
+                <p>+67 CRED earned • 847-person team loves it • Growing together!</p>
+            </div>
+            
+            <div class="action-item">
+                <h4>🧦 Mismatched socks → Dog toys for shelter</h4>
+                <p>+43 CRED earned • Bringing joy to 200+ rescue dogs • Heart-warming!</p>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="#" class="cta-button">Log Your Creative Solution</a>
+        </div>
+    </section>
+
+    <section class="section">
+        <div style="text-align: center; background: rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 3rem;">
+            <h2 style="font-size: 2rem; margin-bottom: 1rem;">Ready to Make Your Mark?</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 2rem;">Log your positive actions, earn CRED, find your community, and celebrate together</p>
+            <a href="https://DoinBetter.com/Here.html" class="cta-button" style="margin-right: 1rem;">Celebrate Your Impact</a>
+            <a href="#" class="cta-button" style="background: linear-gradient(45deg, #4ecdc4, #44a08d);">Start Your Journey</a>
+        </div>
+    </section>
+
+    <script>
+        // Animate CRED counter
+        function animateCredCounter() {
+            const counter = document.getElementById('credCounter');
+            const target = Math.floor(Math.random() * 1000) + 2500;
+            const duration = 2000;
+            const start = parseInt(counter.innerText.replace(',', ''));
+            const increment = (target - start) / (duration / 16);
+            
+            let current = start;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                counter.innerText = Math.floor(current).toLocaleString();
+            }, 16);
+        }
+
+        // Update counter every 10 seconds
+        setInterval(animateCredCounter, 10000);
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add new action items periodically
+        const actionFeed = document.querySelector('.action-feed');
+        const sampleActions = [
+            "🌊 Beach cleanup organized by local hero • +80 CRED • 15 volunteers joined",
+            "🎵 Street musician brightening commutes • +35 CRED • Spreading smiles",
+            "🚴 Bike repair station set up for community • +90 CRED • Sustainable transport!",
+            "📱 Digital literacy classes for seniors • +70 CRED • Bridging the gap",
+            "🐕 Dog walking service for busy neighbors • +40 CRED • Kindness in action"
+        ];
+
+        function addNewAction() {
+            const randomAction = sampleActions[Math.floor(Math.random() * sampleActions.length)];
+            const actionItem = document.createElement('div');
+            actionItem.className = 'action-item';
+            actionItem.innerHTML = `<h4>${randomAction}</h4><p>Just happened • Join the movement!</p>`;
+            actionItem.style.opacity = '0';
+            actionItem.style.transform = 'translateY(20px)';
+            
+            actionFeed.insertBefore(actionItem, actionFeed.firstChild);
+            
+            // Animate in
+            setTimeout(() => {
+                actionItem.style.transition = 'all 0.5s ease';
+                actionItem.style.opacity = '1';
+                actionItem.style.transform = 'translateY(0)';
+            }, 100);
+            
+            // Remove oldest if too many
+            const items = actionFeed.querySelectorAll('.action-item');
+            if (items.length > 6) {
+                items[items.length - 1].remove();
+            }
+        }
+
+        // Update leaderboards with new creative entries
+        const leaderboardUpdates = [
+            {
+                category: "Trash-to-Treasure Champions",
+                entries: [
+                    "Yogurt containers → Seed starting system for food bank",
+                    "Broken umbrellas → Rain collection funnels for gardens", 
+                    "Old tennis balls → Massage tools for seniors with arthritis"
+                ]
+            },
+            {
+                category: "Silver Lining Spotters", 
+                entries: [
+                    "Traffic jam → Mobile volunteer registration opportunity",
+                    "Rainy day → Indoor skill-sharing workshop explosion",
+                    "Power outage → Neighborhood storytelling renaissance"
+                ]
+            },
+            {
+                category: "Silliest Solutions",
+                entries: [
+                    "Belly button lint → Microscopic art installations",
+                    "Expired coupons → Origami teaching tools for math class",
+                    "Broken shoelaces → Emergency plant ties for community garden"
+                ]
+            }
+        ];
+
+        function updateLeaderboards() {
+            // Rotate through creative new entries
+            const randomCategory = leaderboardUpdates[Math.floor(Math.random() * leaderboardUpdates.length)];
+            const randomEntry = randomCategory.entries[Math.floor(Math.random() * randomCategory.entries.length)];
+            
+            // Could add live updates here
+            console.log(`New ${randomCategory.category} entry: ${randomEntry}`);
+        }
+
+        // Update leaderboards every 20 seconds
+        setInterval(updateLeaderboards, 20000);
+    </script>
+</body>
+</html>

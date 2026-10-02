@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Möbiius HUD</title>
+<style>
+  :root{
+    --bg:#0b0d10; --panel:#12161b; --line:#232a31;
+    --text:#e7edf2; --dim:#8b98a3;
+    --accent:#4fd8eb; --good:#3ddc84; --warn:#f5b942; --bad:#ff5c5c;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);
+       font-family:-apple-system,'Segoe UI',sans-serif;padding:24px;}
+  h1{font-size:1.4rem;margin:0 0 4px;}
+  .sub{color:var(--dim);font-size:.85rem;margin-bottom:24px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;}
+  .panel h2{font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;
+             color:var(--dim);margin:0 0 12px;}
+  .stat{font-size:1.8rem;font-weight:600;}
+  .stat-label{font-size:.75rem;color:var(--dim);}
+  .const-note{font-size:.7rem;color:var(--dim);margin-top:4px;}
+  .row{display:flex;justify-content:space-between;align-items:center;
+       padding:8px 0;border-bottom:1px solid var(--line);}
+  .row:last-child{border-bottom:none;}
+  .status{font-size:.7rem;padding:2px 8px;border-radius:99px;font-weight:600;}
+  .status.connected{background:rgba(61,220,132,.15);color:var(--good);}
+  .status.pending{background:rgba(245,185,66,.15);color:var(--warn);}
+  .status.planned{background:rgba(139,152,163,.15);color:var(--dim);}
+  .kind{font-size:.65rem;color:var(--dim);margin-left:6px;}
+  button{background:var(--accent);color:#04202a;border:none;border-radius:6px;
+         padding:8px 14px;font-weight:600;cursor:pointer;font-size:.8rem;}
+  button:hover{opacity:.85;}
+  .add-row{display:flex;gap:8px;margin-top:12px;}
+  .add-row input,.add-row select{flex:1;background:var(--bg);border:1px solid var(--line);
+       color:var(--text);border-radius:6px;padding:6px 8px;font-size:.8rem;}
+  #log{font-family:ui-monospace,monospace;font-size:.72rem;color:var(--dim);
+       max-height:160px;overflow-y:auto;white-space:pre-wrap;}
+</style>
+</head>
+<body>
+
+<h1>Möbiius HUD</h1>
+<div class="sub">Shared workspace for people and processes. Entries below are whatever you register — no simulated telemetry.</div>
+
+<div class="grid">
+
+  <div class="panel">
+    <h2>Reference constants</h2>
+    <div class="row"><span>ALPHA</span><span class="stat" style="font-size:1.1rem">0.743</span></div>
+    <div class="row"><span>PHI</span><span class="stat" style="font-size:1.1rem">1.618</span></div>
+    <div class="const-note">Fixed values you defined. Not derived from live data — shown here as config, not measurement.</div>
+  </div>
+
+  <div class="panel">
+    <h2>Workspace health</h2>
+    <div class="stat" id="healthStat">—</div>
+    <div class="stat-label" id="healthLabel">no entries yet</div>
+    <div class="const-note">Computed live: % of registered entries currently "connected".</div>
+  </div>
+
+  <div class="panel" style="grid-column:1/-1">
+    <h2>Registry — people, jobs, services, anything</h2>
+    <div id="registry"></div>
+    <div class="add-row">
+      <input id="newName" placeholder="Name (person, job, service...)">
+      <select id="newKind">
+        <option value="person">person</option>
+        <option value="job">job</option>
+        <option value="service">service</option>
+        <option value="process">process</option>
+      </select>
+      <select id="newStatus">
+        <option value="connected">connected</option>
+        <option value="pending">pending</option>
+        <option value="planned">planned</option>
+      </select>
+      <button onclick="addEntry()">Add</button>
+    </div>
+  </div>
+
+  <div class="panel" style="grid-column:1/-1">
+    <h2>Event log</h2>
+    <div id="log"></div>
+  </div>
+
+</div>
+
+<script>
+'use strict';
+const ALPHA = 0.743;
+const PHI = 1.618;
+
+// Registry: a flat list where humans and processes sit side by side.
+// status is set by you (or by a real integration later) — never invented.
+let registry = [
+  { id: 1, name: 'Dale',           kind: 'person',  status: 'connected' },
+  { id: 2, name: 'JOB001 — St. Paul earthwork', kind: 'job',     status: 'connected' },
+  { id: 3, name: 'GSOC ticket queue', kind: 'service', status: 'pending'  },
+  { id: 4, name: 'QuickBooks sync',   kind: 'service', status: 'planned'  },
+];
+let nextId = 5;
+
+function log(msg){
+  const el = document.getElementById('log');
+  const t = new Date().toLocaleTimeString();
+  el.textContent = `[${t}] ${msg}\n` + el.textContent;
+}
+
+function render(){
+  const reg = document.getElementById('registry');
+  reg.innerHTML = '';
+  registry.forEach(e=>{
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.innerHTML = `
+      <span>${e.name}<span class="kind">${e.kind}</span></span>
+      <span>
+        <span class="status ${e.status}">${e.status}</span>
+        <button style="margin-left:8px;padding:4px 8px;font-size:.7rem"
+                onclick="cycleStatus(${e.id})">cycle</button>
+      </span>`;
+    reg.appendChild(row);
+  });
+
+  const connected = registry.filter(e=>e.status==='connected').length;
+  const total = registry.length || 1;
+  const pct = Math.round((connected/total)*100);
+  document.getElementById('healthStat').textContent = total ? `${pct}%` : '—';
+  document.getElementById('healthLabel').textContent =
+    total ? `${connected} of ${total} entries connected` : 'no entries yet';
+}
+
+function cycleStatus(id){
+  const order = ['planned','pending','connected'];
+  const e = registry.find(r=>r.id===id);
+  const i = order.indexOf(e.status);
+  e.status = order[(i+1)%order.length];
+  log(`${e.name} -> ${e.status}`);
+  render();
+}
+
+function addEntry(){
+  const name = document.getElementById('newName').value.trim();
+  if(!name){ log('add rejected: name required'); return; }
+  const kind = document.getElementById('newKind').value;
+  const status = document.getElementById('newStatus').value;
+  registry.push({ id: nextId++, name, kind, status });
+  log(`added "${name}" (${kind}, ${status})`);
+  document.getElementById('newName').value = '';
+  render();
+}
+
+log(`booted — ALPHA=${ALPHA} PHI=${PHI} (config values, not live metrics)`);
+render();
+</script>
+</body>
+</html>

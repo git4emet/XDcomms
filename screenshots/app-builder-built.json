@@ -1,0 +1,38 @@
+{
+  "url": "http://127.0.0.1:8081/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Canon Bind",
+      "hasCanvas": false,
+      "bodyTextLen": 2570,
+      "bodyTextHash": "b6f1e5fb3619e1ae39a5ce0e79e8c26dc7140d0e520cec0e651f7ca1bec482d4",
+      "bodyTextPrefix": "Skip to work MÖBII³US · DOINBETTER Canon Bind One page. Platform",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-built.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Canon Bind",
+      "hasCanvas": false,
+      "bodyTextLen": 2570,
+      "bodyTextHash": "b6f1e5fb3619e1ae39a5ce0e79e8c26dc7140d0e520cec0e651f7ca1bec482d4",
+      "bodyTextPrefix": "Skip to work MÖBII³US · DOINBETTER Canon Bind One page. Platform",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-built-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-built.json",
+  "divergesFromBaseline": false,
+  "baselineReasons": []
+}

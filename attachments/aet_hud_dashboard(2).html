@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AET MÖBII³US HUD | teamaet.com</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cyan: #00ffff;
+            --cyan-dim: #00d2d380;
+            --magenta: #ff00ff;
+            --purple: #bb8fce;
+            --gold: #ffd700;
+            --red-alert: #ff4444;
+            --green-ok: #00ff88;
+            --bg-deep: #0a0c10;
+            --bg-panel: #0f1520;
+            --grid-color: #1a2a40;
+            --trust-floor: 0.743;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background: var(--bg-deep);
+            color: var(--cyan);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Scan lines overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 255, 255, 0.015) 2px,
+                rgba(0, 255, 255, 0.015) 4px
+            );
+            pointer-events: none;
+            z-index: 10000;
+        }
+
+        /* Grid background */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Main HUD container */
+        .hud-container {
+            display: grid;
+            grid-template-columns: 280px 1fr 280px;
+            grid-template-rows: auto 1fr auto;
+            min-height: 100vh;
+            gap: 15px;
+            padding: 15px;
+        }
+
+        /* Header bar */
+        .hud-header {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background: linear-gradient(180deg, var(--bg-panel) 0%, transparent 100%);
+            border-bottom: 1px solid var(--cyan-dim);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo-ring {
+            width: 60px;
+            height: 60px;
+            border: 2px solid var(--cyan);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            animation: rotate 20s linear infinite;
+        }
+
+        .logo-ring::before {
+            content: '';
+            position: absolute;
+            width: 80%;
+            height: 80%;
+            border: 1px solid var(--magenta);
+            border-radius: 50%;
+            animation: rotate 10s linear infinite reverse;
+        }
+
+        .logo-ring::after {
+            content: '🧿';
+            font-size: 24px;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .system-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 0 20px var(--cyan);
+        }
+
+        .system-subtitle {
+            font-size: 11px;
+            color: var(--cyan-dim);
+            letter-spacing: 2px;
+        }
+
+        .status-indicators {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .indicator {
+            text-align: center;
+        }
+
+        .indicator-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .indicator-label {
+            font-size: 10px;
+            color: var(--cyan-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .indicator.coherence .indicator-value {
+            color: var(--green-ok);
+            text-shadow: 0 0 15px var(--green-ok);
+        }
+
+        /* Left panel */
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Panel styling */
+        .hud-panel {
+            background: var(--bg-panel);
+            border: 1px solid var(--cyan-dim);
+            border-radius: 8px;
+            padding: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hud-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--cyan), var(--magenta), var(--cyan));
+        }
+
+        .panel-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-title::before {
+            content: '◆';
+            color: var(--cyan);
+        }
+
+        /* Ghost Address Registry */
+        .ghost-list {
+            list-style: none;
+            font-size: 11px;
+        }
+
+        .ghost-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--grid-color);
+        }
+
+        .ghost-addr {
+            color: var(--magenta);
+        }
+
+        .ghost-status {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 3px;
+        }
+
+        .ghost-status.live {
+            background: rgba(0, 255, 136, 0.2);
+            color: var(--green-ok);
+        }
+
+        .ghost-status.stubbed {
+            background: rgba(255, 215, 0, 0.2);
+            color: var(--gold);
+        }
+
+        .ghost-status.planned {
+            background: rgba(187, 143, 206, 0.2);
+            color: var(--purple);
+        }
+
+        /* Lane Monitor */
+        .lane-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+        }
+
+        .lane-cell {
+            width: 100%;
+            aspect-ratio: 1;
+            background: var(--grid-color);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .lane-cell.active {
+            background: rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 10px var(--cyan);
+        }
+
+        .lane-cell:hover {
+            transform: scale(1.1);
+            background: var(--cyan);
+            color: var(--bg-deep);
+        }
+
+        /* Center panel - Main display */
+        .center-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Coherence Ring */
+        .coherence-ring-container {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .coherence-ring {
+            width: 250px;
+            height: 250px;
+            position: relative;
+        }
+
+        .coherence-ring svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .coherence-ring .bg-ring {
+            fill: none;
+            stroke: var(--grid-color);
+            stroke-width: 8;
+        }
+
+        .coherence-ring .value-ring {
+            fill: none;
+            stroke: url(#coherenceGradient);
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 690;
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 1s ease-out;
+        }
+
+        .coherence-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .coherence-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--green-ok);
+            text-shadow: 0 0 30px var(--green-ok);
+        }
+
+        .coherence-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--cyan-dim);
+        }
+
+        /* GSOC Tickets */
+        .ticket-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .ticket-item {
+            background: var(--grid-color);
+            border-left: 3px solid var(--cyan);
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .ticket-item:hover {
+            background: rgba(0, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .ticket-item.urgent {
+            border-left-color: var(--red-alert);
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .ticket-id {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .ticket-time {
+            font-size: 10px;
+            color: var(--cyan-dim);
+        }
+
+        .ticket-desc {
+            font-size: 11px;
+            color: #aaa;
+        }
+
+        .ticket-meta {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+            font-size: 9px;
+        }
+
+        .ticket-tag {
+            padding: 2px 8px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 10px;
+            color: var(--cyan);
+        }
+
+        /* Right panel */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Factor Weights */
+        .factor-list {
+            font-size: 11px;
+        }
+
+        .factor-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .factor-name {
+            width: 100px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .factor-bar {
+            flex: 1;
+            height: 6px;
+            background: var(--grid-color);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .factor-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--cyan), var(--green-ok));
+            border-radius: 3px;
+            transition: width 0.5s ease-out;
+        }
+
+        .factor-value {
+            width: 40px;
+            text-align: right;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px;
+        }
+
+        /* Dale's Voice Panel */
+        .voice-panel {
+            flex: 1;
+        }
+
+        .voice-waveform {
+            height: 80px;
+            background: var(--grid-color);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .wave-bar {
+            width: 4px;
+            background: var(--cyan);
+            border-radius: 2px;
+            animation: wave 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes wave {
+            from { height: 10px; opacity: 0.3; }
+            to { height: 60px; opacity: 1; }
+        }
+
+        .voice-transcript {
+            font-size: 11px;
+            padding: 10px;
+            background: rgba(0, 255, 255, 0.05);
+            border-radius: 5px;
+            min-height: 60px;
+        }
+
+        /* Footer bar */
+        .hud-footer {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 25px;
+            background: linear-gradient(0deg, var(--bg-panel) 0%, transparent 100%);
+            border-top: 1px solid var(--cyan-dim);
+            font-size: 10px;
+        }
+
+        .footer-stats {
+            display: flex;
+            gap: 30px;
+        }
+
+        .footer-stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .stat-dot.green { background: var(--green-ok); }
+        .stat-dot.cyan { background: var(--cyan); }
+        .stat-dot.gold { background: var(--gold); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        /* Sacred geometry overlay */
+        .geometry-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            pointer-events: none;
+            opacity: 0.05;
+            z-index: -1;
+        }
+
+        .geometry-overlay svg {
+            width: 100%;
+            height: 100%;
+            animation: rotate 120s linear infinite;
+        }
+
+        /* Action buttons */
+        .action-btn {
+            background: transparent;
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: var(--cyan);
+            color: var(--bg-deep);
+            box-shadow: 0 0 20px var(--cyan);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--grid-color);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--cyan-dim);
+            border-radius: 3px;
+        }
+
+        /* Live data animations */
+        .new-ticket {
+            animation: newTicketFlash 2s ease-out;
+        }
+
+        @keyframes newTicketFlash {
+            0%, 20% { 
+                background: rgba(255, 0, 255, 0.3);
+                border-color: var(--magenta);
+                transform: translateX(-5px);
+            }
+            100% { 
+                background: rgba(0, 255, 255, 0.03);
+                border-color: var(--cyan-dim);
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Voice panel sentiment styles */
+        .voice-raw {
+            font-style: italic;
+            color: var(--cyan);
+            margin-bottom: 8px;
+        }
+
+        .voice-translated {
+            color: var(--green);
+            font-size: 10px;
+            margin-bottom: 8px;
+        }
+
+        .voice-meta {
+            display: flex;
+            gap: 10px;
+            font-size: 9px;
+        }
+
+        .sentiment-routine { 
+            color: var(--green); 
+            background: rgba(0, 255, 136, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        .sentiment-concern { 
+            color: #ffd700; 
+            background: rgba(255, 215, 0, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        .sentiment-urgent { 
+            color: var(--magenta); 
+            background: rgba(255, 0, 255, 0.2);
+            padding: 2px 6px;
+            border-radius: 3px;
+            animation: pulse 1s infinite;
+        }
+        .sentiment-excited { 
+            color: var(--cyan); 
+            background: rgba(0, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .action-required {
+            color: #ff4444;
+            font-weight: bold;
+            animation: blink 0.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* SPT notification popup */
+        .spt-notification {
+            animation: slideIn 0.3s ease-out, fadeOut 0.5s ease-in 2.5s forwards;
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .spt-header {
+            font-size: 10px;
+            color: var(--cyan-dim);
+            margin-bottom: 4px;
+        }
+
+        .spt-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--green);
+        }
+
+        /* Borehole indicators */
+        .borehole-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--green);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 9px;
+        }
+
+        .borehole-badge.drilling {
+            border-color: var(--cyan);
+            background: rgba(0, 255, 255, 0.1);
+        }
+
+        .borehole-badge.drilling::before {
+            content: '⚙️';
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Connection status indicator */
+        .connection-status {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 9px;
+            font-family: 'Share Tech Mono', monospace;
+            z-index: 1000;
+        }
+
+        .connection-status.connected {
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid var(--green);
+            color: var(--green);
+        }
+
+        .connection-status.disconnected {
+            background: rgba(255, 0, 255, 0.2);
+            border: 1px solid var(--magenta);
+            color: var(--magenta);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .hud-container {
+                grid-template-columns: 1fr;
+            }
+            .left-panel, .right-panel {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sacred Geometry Background -->
+    <div class="geometry-overlay">
+        <svg viewBox="0 0 400 400">
+            <defs>
+                <linearGradient id="geoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#00ffff;stop-opacity:0.5"/>
+                    <stop offset="100%" style="stop-color:#ff00ff;stop-opacity:0.5"/>
+                </linearGradient>
+            </defs>
+            <!-- Merkaba pattern -->
+            <polygon points="200,50 350,275 50,275" fill="none" stroke="url(#geoGrad)" stroke-width="0.5"/>
+            <polygon points="200,350 350,125 50,125" fill="none" stroke="url(#geoGrad)" stroke-width="0.5"/>
+            <circle cx="200" cy="200" r="150" fill="none" stroke="url(#geoGrad)" stroke-width="0.5"/>
+            <circle cx="200" cy="200" r="100" fill="none" stroke="url(#geoGrad)" stroke-width="0.5"/>
+            <circle cx="200" cy="200" r="50" fill="none" stroke="url(#geoGrad)" stroke-width="0.5"/>
+        </svg>
+    </div>
+
+    <div class="hud-container">
+        <!-- Header -->
+        <header class="hud-header">
+            <div class="logo-section">
+                <div class="logo-ring"></div>
+                <div>
+                    <div class="system-title">AET MÖBII³US HUD</div>
+                    <div class="system-subtitle">American Engineering Testing • Field Operations Command</div>
+                </div>
+            </div>
+            <div class="status-indicators">
+                <div class="indicator coherence">
+                    <div class="indicator-value" id="headerCoherence">1.000</div>
+                    <div class="indicator-label">Coherence</div>
+                </div>
+                <div class="indicator">
+                    <div class="indicator-value" id="headerLanes">1047</div>
+                    <div class="indicator-label">Lanes Active</div>
+                </div>
+                <div class="indicator">
+                    <div class="indicator-value" id="headerGamma">147</div>
+                    <div class="indicator-label">Γ Landings</div>
+                </div>
+                <div class="indicator">
+                    <div class="indicator-value" id="headerTime">--:--:--</div>
+                    <div class="indicator-label">UTC</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Left Panel -->
+        <aside class="left-panel">
+            <!-- Ghost Address Registry -->
+            <div class="hud-panel">
+                <div class="panel-title">Ghost Address Registry (8.8.8.*)</div>
+                <ul class="ghost-list" id="ghostList">
+                    <!-- Populated by JS -->
+                </ul>
+            </div>
+
+            <!-- Lane Monitor -->
+            <div class="hud-panel">
+                <div class="panel-title">Lane Monitor</div>
+                <div class="lane-grid" id="laneGrid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </aside>
+
+        <!-- Center Panel -->
+        <main class="center-panel">
+            <!-- Coherence Ring -->
+            <div class="hud-panel">
+                <div class="coherence-ring-container">
+                    <div class="coherence-ring">
+                        <svg viewBox="0 0 250 250">
+                            <defs>
+                                <linearGradient id="coherenceGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#00ffff"/>
+                                    <stop offset="50%" style="stop-color:#00ff88"/>
+                                    <stop offset="100%" style="stop-color:#00ffff"/>
+                                </linearGradient>
+                            </defs>
+                            <circle class="bg-ring" cx="125" cy="125" r="110"/>
+                            <circle class="value-ring" id="coherenceRing" cx="125" cy="125" r="110"/>
+                        </svg>
+                        <div class="coherence-center">
+                            <div class="coherence-value" id="coherenceValue">1.000</div>
+                            <div class="coherence-label">System Coherence</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GSOC Tickets -->
+            <div class="hud-panel" style="flex: 1;">
+                <div class="panel-title">GSOC Field Tickets</div>
+                <div class="ticket-list" id="ticketList">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Panel -->
+        <aside class="right-panel">
+            <!-- Factor Weights -->
+            <div class="hud-panel">
+                <div class="panel-title">Factor Weights (α = 0.743)</div>
+                <div class="factor-list" id="factorList">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Dale's Voice -->
+            <div class="hud-panel voice-panel">
+                <div class="panel-title">Dale's Voice (Lane 1031)</div>
+                <div class="voice-waveform" id="voiceWaveform">
+                    <!-- Wave bars populated by JS -->
+                </div>
+                <div class="voice-transcript" id="voiceTranscript">
+                    Awaiting transmission from field ops...
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="hud-panel">
+                <div class="panel-title">Quick Actions</div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button class="action-btn" onclick="createTicket()">+ New Ticket</button>
+                    <button class="action-btn" onclick="broadcastMantra()">📡 Broadcast SHEFA</button>
+                    <button class="action-btn" onclick="pingGhost()">🔍 Ping Ghost Addr</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Footer -->
+        <footer class="hud-footer">
+            <div class="footer-stats">
+                <div class="footer-stat">
+                    <div class="stat-dot green"></div>
+                    <span>PostgreSQL: 7 tables, 12.8 GB</span>
+                </div>
+                <div class="footer-stat">
+                    <div class="stat-dot cyan"></div>
+                    <span>n8n Workflows: 3 active</span>
+                </div>
+                <div class="footer-stat">
+                    <div class="stat-dot gold"></div>
+                    <span>TinyBox Mesh: 350+ nodes</span>
+                </div>
+                <div class="footer-stat">
+                    <div class="stat-dot green"></div>
+                    <span>Trust Floor: 0.743 (α)</span>
+                </div>
+            </div>
+            <div>
+                <span style="color: var(--cyan-dim);">TWIN PRIME: </span>
+                <span style="color: var(--magenta);">8009</span>
+                <span style="color: var(--cyan-dim);"> / </span>
+                <span style="color: var(--magenta);">8011</span>
+                <span style="color: var(--cyan-dim);"> Hz</span>
+                <span style="margin-left: 20px;">🧿 Everybody! DoinBetter!! Together!!!</span>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // ============================================
+        // MÖBII³US SYSTEM CONSTANTS
+        // ============================================
+        const ALPHA = 0.743;
+        const TWIN_PRIME = [8009, 8011];
+        const BRIDGE_PORT = 8010;
+        const WS_URL = `ws://${window.location.host}/ws`;
+        const API_BASE = '';
+        
+        // Live data state
+        let wsConnection = null;
+        let liveData = {
+            coherence: 1.0,
+            tickets: [],
+            boreholes: [],
+            dale: null,
+            factors: {},
+        };
+        
+        // Ghost addresses
+        const GHOST_REGISTRY = [
+            { addr: '8.8.8.CO', name: 'Coherence', status: 'live' },
+            { addr: '8.8.8.MESH', name: 'TinyBox Mesh', status: 'live' },
+            { addr: '8.8.8.STAGE', name: 'TED Stage', status: 'live' },
+            { addr: '8.8.8.DALEK', name: 'Dalek Monitor', status: 'live' },
+            { addr: '8.8.8.METATRON', name: 'Metatron', status: 'live' },
+            { addr: '8.8.8.PORTAL', name: 'Domain Portal', status: 'live' },
+            { addr: '8.8.8.OCR', name: 'Tesseract Vision', status: 'live' },
+            { addr: '8.8.8.ROOF', name: 'Roof Fund', status: 'live' },
+            { addr: '8.8.8.DHD', name: 'DHD', status: 'stubbed' },
+            { addr: '8.8.8.HARVEST', name: 'Harvester', status: 'stubbed' },
+            { addr: '8.8.8.JARVIS', name: 'JARVIS', status: 'stubbed' },
+            { addr: '8.8.8.TARDIS', name: 'TARDIS', status: 'planned' },
+            { addr: '8.8.8.ASGARD', name: 'Asgard Council', status: 'planned' }
+        ];
+
+        // Lanes (higher lanes only for display)
+        const LANES = {
+            1025: { name: 'JOY', freq: 1.618, status: 'live' },
+            1026: { name: 'WONDER', freq: 2.618, status: 'live' },
+            1027: { name: 'SHEFA', freq: 0.743, status: 'live' },
+            1028: { name: 'SHEMA', freq: 0.743, status: 'live' },
+            1029: { name: 'RESONANCE', freq: 0.743, status: 'live' },
+            1030: { name: 'XORCH', freq: 0.743, status: 'live' },
+            1031: { name: 'DALE', freq: 61, status: 'live' },
+            1032: { name: 'GAMMA', freq: 0.743, status: 'live' },
+            1033: { name: 'RESEARCH', freq: null, status: 'stubbed' },
+            1034: { name: 'KNOWLEDGE', freq: null, status: 'stubbed' },
+            1035: { name: 'INDEX', freq: null, status: 'stubbed' },
+            1036: { name: 'SPORE_DRIVE', freq: 4.6, status: 'stubbed' },
+            1042: { name: 'DALEK_ALERT', freq: null, status: 'live' }
+        };
+
+        // Factor weights
+        const FACTORS = {
+            'Economic Cost': 0.743,
+            'Performance': 0.880,
+            'Energy Efficiency': 0.618,
+            'Ecosystem': 0.920,
+            'Security': 0.810,
+            'Scalability': 0.670,
+            'Reliability': 0.950,
+            'Dev Velocity': 0.790,
+            'Hardware': 0.820,
+            'Learning': 0.540,
+            'Independence': 0.710,
+            'Domain Fit': 0.890,
+            'LOVE': 1.000,
+            'GRATITUDE': 0.980
+        };
+
+        // ============================================
+        // LIVE DATA MANAGEMENT
+        // ============================================
+        
+        // WebSocket connection
+        function connectWebSocket() {
+            if (wsConnection) wsConnection.close();
+            
+            wsConnection = new WebSocket(WS_URL);
+            
+            wsConnection.onopen = () => {
+                console.log('🧿 WebSocket connected to Möbii³us mesh');
+                document.getElementById('headerCoherence').style.color = 'var(--green)';
+            };
+            
+            wsConnection.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                handleLiveData(data);
+            };
+            
+            wsConnection.onclose = () => {
+                console.log('🔌 WebSocket disconnected, reconnecting...');
+                document.getElementById('headerCoherence').style.color = 'var(--magenta)';
+                setTimeout(connectWebSocket, 2000);
+            };
+            
+            wsConnection.onerror = (err) => {
+                console.error('WebSocket error:', err);
+            };
+        }
+        
+        function handleLiveData(data) {
+            // Update coherence
+            if (data.coherence !== undefined) {
+                liveData.coherence = data.coherence;
+                updateCoherence(data.coherence);
+            }
+            
+            // Handle different message types
+            if (data.type === 'init' || data.bubbles) {
+                // FizzyBubble frame
+                if (data.latest_ticket) {
+                    addLiveTicket(data.latest_ticket);
+                }
+                if (data.waveform) {
+                    updateVoiceFromLive(data.waveform);
+                }
+                if (data.metrics) {
+                    updateMetrics(data.metrics);
+                }
+            }
+            
+            if (data.type === 'ticket') {
+                addLiveTicket(data.data);
+            }
+            
+            if (data.type === 'spt') {
+                showSPTNotification(data.data);
+            }
+        }
+        
+        // Fetch live tickets from API
+        async function fetchLiveTickets() {
+            try {
+                const response = await fetch(`${API_BASE}/api/tickets?limit=10`);
+                if (response.ok) {
+                    const data = await response.json();
+                    liveData.tickets = data.tickets || [];
+                    renderTicketList(liveData.tickets);
+                }
+            } catch (err) {
+                console.log('Using simulated tickets (API unavailable)');
+                // Fall back to simulated data
+                renderTicketList(generateSimulatedTickets());
+            }
+        }
+        
+        // Fetch live boreholes
+        async function fetchLiveBoreholes() {
+            try {
+                const response = await fetch(`${API_BASE}/api/boreholes`);
+                if (response.ok) {
+                    const data = await response.json();
+                    liveData.boreholes = data.boreholes || [];
+                    updateBoreholeCount(data.drilling || 0);
+                }
+            } catch (err) {
+                // Simulated fallback
+                updateBoreholeCount(Math.floor(Math.random() * 5) + 2);
+            }
+        }
+        
+        // Fetch Dale's latest transmission
+        async function fetchDaleTransmission() {
+            try {
+                const response = await fetch(`${API_BASE}/api/dale`);
+                if (response.ok) {
+                    const data = await response.json();
+                    liveData.dale = data;
+                    updateVoicePanel(data);
+                }
+            } catch (err) {
+                // Simulated Dale
+                updateVoicePanel(generateSimulatedDale());
+            }
+        }
+        
+        // Generate simulated geotech tickets when API unavailable
+        function generateSimulatedTickets() {
+            const categories = ['DRILLING', 'SAMPLING', 'LAB', 'EQUIPMENT', 'SAFETY', 'LOGISTICS'];
+            const priorities = ['ROUTINE', 'ELEVATED', 'URGENT', 'CRITICAL'];
+            const projects = ['MN-DOT-394', 'HENNEPIN-BRIDGE-42', 'METRO-TRANSIT', 'MSP-RUNWAY'];
+            const drillers = ['Dale', 'Mike', 'Tom', 'Steve'];
+            
+            const templates = [
+                { desc: 'SPT refusal at {depth}ft - N>100 - {bh}', tags: ['FIELD', 'URGENT'], urgent: true },
+                { desc: 'Water table encountered at {depth}ft - {bh}', tags: ['FIELD', 'WATER'] },
+                { desc: 'Drill rig {rig} maintenance required - hydraulic leak', tags: ['EQUIPMENT', 'MAINTENANCE'] },
+                { desc: 'Lab results pending - Atterberg limits - {bh}', tags: ['LAB', 'PENDING'] },
+                { desc: 'Site access issue - {project} - gate code needed', tags: ['LOGISTICS', 'ACCESS'] },
+                { desc: 'Weather delay - lightning within 5 miles', tags: ['SAFETY', 'WEATHER'], urgent: true },
+                { desc: 'Shelby tube sample collected at {depth}ft - {bh}', tags: ['SAMPLING'] },
+                { desc: 'Mobilization complete - {rig} at {project}', tags: ['LOGISTICS'] },
+                { desc: 'Contamination suspected at {depth}ft - PID screening requested', tags: ['ENV', 'URGENT'], urgent: true },
+                { desc: 'Borehole {bh} complete - {depth}ft total depth', tags: ['FIELD', 'COMPLETE'] },
+            ];
+            
+            const tickets = [];
+            const baseId = 147 + Math.floor(Math.random() * 100);
+            
+            for (let i = 0; i < 8; i++) {
+                const template = templates[Math.floor(Math.random() * templates.length)];
+                const bh = `BH-${Math.floor(Math.random() * 50 + 1).toString().padStart(3, '0')}`;
+                const depth = Math.floor(Math.random() * 50 + 10);
+                const rig = `RIG-0${Math.floor(Math.random() * 5 + 1)}`;
+                const project = projects[Math.floor(Math.random() * projects.length)];
+                
+                let desc = template.desc
+                    .replace('{depth}', depth)
+                    .replace('{bh}', bh)
+                    .replace('{rig}', rig)
+                    .replace('{project}', project);
+                
+                const hour = Math.floor(Math.random() * 10 + 6);
+                const minute = Math.floor(Math.random() * 60);
+                
+                tickets.push({
+                    id: `GSOC-${(baseId + i).toString().padStart(4, '0')}`,
+                    created_at: new Date().toISOString(),
+                    time: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`,
+                    title: desc,
+                    description: desc,
+                    tags: template.tags,
+                    urgent: template.urgent || false,
+                    category: categories[Math.floor(Math.random() * categories.length)],
+                    priority: template.urgent ? 'URGENT' : priorities[Math.floor(Math.random() * priorities.length)],
+                });
+            }
+            
+            return tickets.sort((a, b) => b.id.localeCompare(a.id));
+        }
+        
+        // Generate simulated Dale transmission
+        function generateSimulatedDale() {
+            const phrases = [
+                { raw: "We're hitting some hard stuff down here at 35 feet. Might need the diamond bit.", sentiment: "concern" },
+                { raw: "Water's coming up fast. She's muddy as hell. Better note that.", sentiment: "urgent" },
+                { raw: "Sample looks good. Nice clean clay. Sticky as all get out.", sentiment: "routine" },
+                { raw: "Just wrapped up BH-042. Moving out to the next location.", sentiment: "routine" },
+                { raw: "Got refusal at 52 feet. This rock ain't going nowhere.", sentiment: "urgent" },
+                { raw: "Raining cats and dogs out here. Tarping up the rig.", sentiment: "concern" },
+                { raw: "She's spinning like butter through this sand. Easy going.", sentiment: "routine" },
+                { raw: "Found some crap at 15 feet. Looks like old buried topsoil.", sentiment: "routine" },
+            ];
+            
+            const phrase = phrases[Math.floor(Math.random() * phrases.length)];
+            return {
+                raw: phrase.raw,
+                translated: phrase.raw.replace("hard stuff", "dense formation")
+                    .replace("muddy as hell", "high groundwater")
+                    .replace("Sticky as all get out", "High plasticity")
+                    .replace("ain't going nowhere", "requires coring")
+                    .replace("Raining cats and dogs", "Precipitation delay")
+                    .replace("spinning like butter", "low resistance drilling")
+                    .replace("crap", "organic material"),
+                sentiment: phrase.sentiment,
+                action_required: phrase.sentiment === 'urgent',
+                keywords: ['field', 'drilling'],
+                timestamp: new Date().toISOString(),
+            };
+        }
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            initGhostList();
+            initLaneGrid();
+            initFactorList();
+            initVoiceWaveform();
+            startClock();
+            startAnimations();
+            
+            // Connect to live data
+            fetchLiveTickets();
+            fetchLiveBoreholes();
+            fetchDaleTransmission();
+            
+            // Try WebSocket connection
+            try {
+                connectWebSocket();
+            } catch (err) {
+                console.log('WebSocket unavailable, using polling');
+            }
+            
+            // Refresh live data periodically (every 5 seconds as backup)
+            setInterval(() => {
+                fetchLiveTickets();
+                fetchDaleTransmission();
+            }, 5000);
+            
+            // Simulate gamma landings
+            setInterval(() => {
+                const gammaCount = parseInt(document.getElementById('headerGamma').textContent) || 147;
+                if (Math.random() > 0.7) {
+                    document.getElementById('headerGamma').textContent = gammaCount + 1;
+                }
+            }, 3000);
+        });
+
+        // ============================================
+        // GHOST ADDRESS REGISTRY
+        // ============================================
+        function initGhostList() {
+            const list = document.getElementById('ghostList');
+            list.innerHTML = GHOST_REGISTRY.map(g => `
+                <li class="ghost-item">
+                    <span class="ghost-addr">${g.addr}</span>
+                    <span>${g.name}</span>
+                    <span class="ghost-status ${g.status}">${g.status}</span>
+                </li>
+            `).join('');
+        }
+
+        // ============================================
+        // LANE MONITOR GRID
+        // ============================================
+        function initLaneGrid() {
+            const grid = document.getElementById('laneGrid');
+            let html = '';
+            // Show mesh lanes 1-16 + higher lanes
+            for (let i = 1; i <= 16; i++) {
+                const isActive = Math.random() > 0.3;
+                html += `<div class="lane-cell ${isActive ? 'active' : ''}" title="Lane ${i}">${i}</div>`;
+            }
+            grid.innerHTML = html;
+            
+            // Randomly toggle lanes
+            setInterval(() => {
+                const cells = grid.querySelectorAll('.lane-cell');
+                const idx = Math.floor(Math.random() * cells.length);
+                cells[idx].classList.toggle('active');
+            }, 500);
+        }
+
+        // ============================================
+        // FACTOR WEIGHTS
+        // ============================================
+        function initFactorList() {
+            const list = document.getElementById('factorList');
+            list.innerHTML = Object.entries(FACTORS).map(([name, value]) => `
+                <div class="factor-item">
+                    <span class="factor-name" title="${name}">${name}</span>
+                    <div class="factor-bar">
+                        <div class="factor-fill" style="width: ${value * 100}%"></div>
+                    </div>
+                    <span class="factor-value">${value.toFixed(3)}</span>
+                </div>
+            `).join('');
+        }
+
+        // ============================================
+        // GSOC TICKETS - LIVE RENDERING
+        // ============================================
+        function renderTicketList(tickets) {
+            const list = document.getElementById('ticketList');
+            list.innerHTML = tickets.slice(0, 8).map(t => `
+                <div class="ticket-item ${t.urgent ? 'urgent' : ''}" data-id="${t.id}">
+                    <div class="ticket-header">
+                        <span class="ticket-id">${t.id}</span>
+                        <span class="ticket-time">${t.time || formatTime(t.created_at)} UTC</span>
+                    </div>
+                    <div class="ticket-desc">${t.title || t.description || t.desc}</div>
+                    <div class="ticket-meta">
+                        ${(t.tags || []).slice(0, 3).map(tag => `<span class="ticket-tag">${tag}</span>`).join('')}
+                        ${t.priority && t.priority !== 'ROUTINE' ? `<span class="ticket-tag" style="background: ${getPriorityColor(t.priority)}">${t.priority}</span>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function addLiveTicket(ticket) {
+            const list = document.getElementById('ticketList');
+            const existingTicket = list.querySelector(`[data-id="${ticket.id}"]`);
+            if (existingTicket) return; // Don't add duplicates
+            
+            const ticketHtml = `
+                <div class="ticket-item ${ticket.urgent ? 'urgent' : ''} new-ticket" data-id="${ticket.id}">
+                    <div class="ticket-header">
+                        <span class="ticket-id">${ticket.id}</span>
+                        <span class="ticket-time">${ticket.time || formatTime(ticket.created_at)} UTC</span>
+                    </div>
+                    <div class="ticket-desc">${ticket.title || ticket.description || ticket.desc}</div>
+                    <div class="ticket-meta">
+                        ${(ticket.tags || []).slice(0, 3).map(tag => `<span class="ticket-tag">${tag}</span>`).join('')}
+                    </div>
+                </div>
+            `;
+            
+            list.insertAdjacentHTML('afterbegin', ticketHtml);
+            
+            // Remove oldest if more than 8
+            const items = list.querySelectorAll('.ticket-item');
+            if (items.length > 8) {
+                items[items.length - 1].remove();
+            }
+            
+            // Flash animation for new ticket
+            setTimeout(() => {
+                const newTicket = list.querySelector('.new-ticket');
+                if (newTicket) newTicket.classList.remove('new-ticket');
+            }, 2000);
+        }
+        
+        function formatTime(isoString) {
+            if (!isoString) return '--:--';
+            const d = new Date(isoString);
+            return `${d.getUTCHours().toString().padStart(2, '0')}:${d.getUTCMinutes().toString().padStart(2, '0')}`;
+        }
+        
+        function getPriorityColor(priority) {
+            const colors = {
+                'ROUTINE': 'var(--green)',
+                'ELEVATED': 'var(--cyan)',
+                'URGENT': 'var(--magenta)',
+                'CRITICAL': '#ff4444'
+            };
+            return colors[priority] || 'var(--cyan-dim)';
+        }
+        
+        // ============================================
+        // VOICE PANEL - LIVE UPDATES
+        // ============================================
+        function updateVoicePanel(dale) {
+            const waveContainer = document.getElementById('voiceWaveform');
+            const transcriptEl = document.getElementById('voiceTranscript');
+            
+            if (transcriptEl) {
+                transcriptEl.innerHTML = `
+                    <div class="voice-raw">"${dale.raw}"</div>
+                    <div class="voice-translated">→ ${dale.translated}</div>
+                    <div class="voice-meta">
+                        <span class="sentiment-${dale.sentiment}">${dale.sentiment.toUpperCase()}</span>
+                        ${dale.action_required ? '<span class="action-required">⚠️ ACTION REQUIRED</span>' : ''}
+                    </div>
+                `;
+            }
+            
+            // Update waveform color based on sentiment
+            if (waveContainer) {
+                const bars = waveContainer.querySelectorAll('.wave-bar');
+                const color = dale.sentiment === 'urgent' ? 'var(--magenta)' : 
+                              dale.sentiment === 'concern' ? '#ffd700' : 'var(--cyan)';
+                bars.forEach(bar => bar.style.background = color);
+            }
+        }
+        
+        function updateVoiceFromLive(waveformData) {
+            const transcriptEl = document.getElementById('voiceTranscript');
+            if (transcriptEl && waveformData.transcript) {
+                transcriptEl.innerHTML = `
+                    <div class="voice-raw">"${waveformData.transcript}"</div>
+                    <div class="voice-translated">→ ${waveformData.translated}</div>
+                    <div class="voice-meta">
+                        <span class="sentiment-${waveformData.sentiment}">${waveformData.sentiment.toUpperCase()}</span>
+                        ${waveformData.action_required ? '<span class="action-required">⚠️ ACTION</span>' : ''}
+                    </div>
+                `;
+            }
+        }
+        
+        // ============================================
+        // METRICS & BOREHOLES
+        // ============================================
+        function updateMetrics(metrics) {
+            // Update header indicators
+            if (metrics.open_tickets !== undefined) {
+                // Could add a ticket count indicator
+            }
+            if (metrics.rigs_active !== undefined) {
+                updateBoreholeCount(metrics.boreholes_drilling || 0);
+            }
+        }
+        
+        function updateBoreholeCount(count) {
+            // Could add a borehole indicator to the header
+            const rigsIndicator = document.querySelector('.indicator:nth-child(2) .indicator-value');
+            if (rigsIndicator) {
+                // Repurpose lanes indicator for drilling activity
+            }
+        }
+        
+        // ============================================
+        // SPT NOTIFICATIONS
+        // ============================================
+        function showSPTNotification(sptData) {
+            // Create floating notification for SPT results
+            const notification = document.createElement('div');
+            notification.className = 'spt-notification';
+            notification.innerHTML = `
+                <div class="spt-header">📍 SPT @ ${sptData.label || sptData.tooltip}</div>
+                <div class="spt-value">N = ${sptData.data?.n_value || '??'}</div>
+            `;
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, rgba(0,30,60,0.95), rgba(20,0,40,0.95));
+                border: 1px solid var(--cyan);
+                border-radius: 8px;
+                padding: 12px 16px;
+                color: var(--cyan);
+                font-family: 'Orbitron', monospace;
+                z-index: 1000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        // ============================================
+        // VOICE WAVEFORM
+        // ============================================
+        function initVoiceWaveform() {
+            const waveform = document.getElementById('voiceWaveform');
+            let html = '';
+            for (let i = 0; i < 30; i++) {
+                const delay = (i * 0.05).toFixed(2);
+                html += `<div class="wave-bar" style="animation-delay: ${delay}s"></div>`;
+            }
+            waveform.innerHTML = html;
+        }
+
+        // ============================================
+        // CLOCK
+        // ============================================
+        function startClock() {
+            const update = () => {
+                const now = new Date();
+                document.getElementById('headerTime').textContent = 
+                    now.toISOString().substr(11, 8);
+            };
+            update();
+            setInterval(update, 1000);
+        }
+
+        // ============================================
+        // ANIMATIONS
+        // ============================================
+        function startAnimations() {
+            // Coherence ring animation
+            const coherenceRing = document.getElementById('coherenceRing');
+            const circumference = 2 * Math.PI * 110;
+            coherenceRing.style.strokeDasharray = circumference;
+            
+            const updateCoherence = () => {
+                const coherence = 0.95 + Math.random() * 0.05; // 0.95-1.00
+                const offset = circumference * (1 - coherence);
+                coherenceRing.style.strokeDashoffset = offset;
+                document.getElementById('coherenceValue').textContent = coherence.toFixed(3);
+                document.getElementById('headerCoherence').textContent = coherence.toFixed(3);
+            };
+            updateCoherence();
+            setInterval(updateCoherence, 3000);
+
+            // Gamma landings increment
+            setInterval(() => {
+                const el = document.getElementById('headerGamma');
+                const current = parseInt(el.textContent);
+                if (Math.random() > 0.9) {
+                    el.textContent = current + 1;
+                }
+            }, 5000);
+
+            // Voice transcript simulation
+            const transcripts = [
+                "Dale: Borehole depth at 42 meters, encountering clay layer...",
+            // Dynamic transcript updates now handled by fetchDaleTransmission()
+            // Initial simulated voice update
+            setTimeout(() => {
+                updateVoicePanel(generateSimulatedDale());
+            }, 2000);
+            
+            // Periodic Dale updates (if WebSocket not connected)
+            setInterval(() => {
+                if (!wsConnection || wsConnection.readyState !== WebSocket.OPEN) {
+                    updateVoicePanel(generateSimulatedDale());
+                }
+            }, 8000);
+        }
+
+        // ============================================
+        // ACTION HANDLERS - LIVE API INTEGRATION
+        // ============================================
+        async function createTicket() {
+            const categories = ['DRILLING', 'SAMPLING', 'LAB', 'EQUIPMENT', 'SAFETY'];
+            const category = categories[Math.floor(Math.random() * categories.length)];
+            
+            const titles = [
+                'SPT refusal - requesting authorization to core',
+                'Water table higher than projected',
+                'Sample quality concern - poor recovery',
+                'Equipment maintenance required',
+                'Weather delay - operations suspended'
+            ];
+            const title = titles[Math.floor(Math.random() * titles.length)];
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/tickets`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: title,
+                        description: `Field-generated ticket: ${title}`,
+                        category: category,
+                        priority: 'ELEVATED',
+                        tags: ['HUD', 'FIELD'],
+                        urgent: false
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showNotification(`✅ Ticket ${data.id} created`, 'success');
+                    // Refresh ticket list
+                    fetchLiveTickets();
+                } else {
+                    throw new Error('API unavailable');
+                }
+            } catch (err) {
+                // Fallback: create local simulated ticket
+                const id = 'GSOC-' + String(148 + Math.floor(Math.random() * 100)).padStart(4, '0');
+                const newTicket = {
+                    id: id,
+                    time: new Date().toISOString().substr(11, 5),
+                    title: title,
+                    tags: ['HUD', category],
+                    urgent: false,
+                    created_at: new Date().toISOString()
+                };
+                addLiveTicket(newTicket);
+                showNotification(`✅ Ticket ${id} created (local)`, 'success');
+            }
+        }
+
+        async function broadcastMantra() {
+            const mantras = [
+                "שֶׁפַע – Divine abundance flows through all channels",
+                "The mesh breathes. The lanes sing. Coherence holds.",
+                "Both sides win every time.",
+                "What you witness is what becomes.",
+                "Everybody! DoinBetter!! Together!!!",
+                "Trust floor: 0.743 — no action falls below"
+            ];
+            const mantra = mantras[Math.floor(Math.random() * mantras.length)];
+            
+            // Try to send via WebSocket
+            if (wsConnection && wsConnection.readyState === WebSocket.OPEN) {
+                wsConnection.send(JSON.stringify({
+                    type: 'broadcast_shefa',
+                    mantra: mantra,
+                    lane: 1027
+                }));
+            }
+            
+            showNotification(`📡 SHEFA (Lane 1027): ${mantra}`, 'mantra');
+        }
+
+        async function pingGhost() {
+            const ghosts = ['CO', 'MESH', 'GEOTECH', 'DALEK'];
+            const ghost = ghosts[Math.floor(Math.random() * ghosts.length)];
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/ghosts/${ghost}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    showNotification(`🔍 ${data.address}: ${JSON.stringify(data.response)}`, 'ghost');
+                } else {
+                    throw new Error('API unavailable');
+                }
+            } catch (err) {
+                // Fallback: simulated response
+                const responses = {
+                    'CO': { coherence: (ALPHA + Math.random() * 0.257).toFixed(3), status: 'optimal' },
+                    'MESH': { nodes: 350 + Math.floor(Math.random() * 10), uptime: '99.97%' },
+                    'GEOTECH': { boreholes: Math.floor(Math.random() * 5) + 2, rigs: 3 },
+                    'DALEK': { chaos_level: (Math.random() * 0.05).toFixed(3), alerts: 0 }
+                };
+                showNotification(`🔍 8.8.8.${ghost}: ${JSON.stringify(responses[ghost])}`, 'ghost');
+            }
+        }
+        
+        // Notification helper
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `hud-notification ${type}`;
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: linear-gradient(135deg, rgba(0,30,60,0.95), rgba(20,0,40,0.95));
+                border: 1px solid ${type === 'success' ? 'var(--green)' : type === 'mantra' ? 'var(--gold)' : 'var(--cyan)'};
+                border-radius: 8px;
+                padding: 12px 20px;
+                color: ${type === 'success' ? 'var(--green)' : type === 'mantra' ? 'var(--gold)' : 'var(--cyan)'};
+                font-family: 'Share Tech Mono', monospace;
+                font-size: 11px;
+                max-width: 400px;
+                z-index: 1000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.style.animation = 'fadeOut 0.5s ease-in forwards';
+                setTimeout(() => notification.remove(), 500);
+            }, 4000);
+        }
+
+        // ============================================
+        // WEBSOCKET - NOW ACTIVE
+        // ============================================
+        // WebSocket connection is established in DOMContentLoaded
+        // Messages handled by handleLiveData()
+    </script>
+</body>
+</html>

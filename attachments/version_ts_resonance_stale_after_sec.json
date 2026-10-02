@@ -1,0 +1,7 @@
+
+{
+  "version": "0.1.0",
+  "ts": "<ISO8601>",
+  "resonance": [/* 192 floats, 0..1 */],
+  "stale_after_sec": 30
+}

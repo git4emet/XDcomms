@@ -36,6 +36,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { MobiusMark } from "./mobius-mark";
+import { DistillView } from "./distill-view";
 
 const TRIAGE_TONE: Record<Triage, "keep" | "archive" | "boundary" | "spec"> = {
   keep: "keep",
@@ -65,6 +66,7 @@ export function BindPage() {
         {(
           [
             ["bind", "Bind"],
+            ["distill", "Distill"],
             ["map", "Map"],
             ["constants", "Constants"],
           ] as const
@@ -87,6 +89,7 @@ export function BindPage() {
       </nav>
       <main id="work" className="mx-auto max-w-7xl px-4 py-5 md:px-6 md:py-8">
         {view === "bind" ? <BindView /> : null}
+        {view === "distill" ? <DistillView /> : null}
         {view === "map" ? <MapView /> : null}
         {view === "constants" ? <ConstantsView /> : null}
       </main>
@@ -736,7 +739,11 @@ function ConstantsView() {
           </div>
           <div>
             <dt className="text-muted">Connectus</dt>
-            <dd>Spec slot only. No implementation until the English spec exists.</dd>
+            <dd>Spec slot. UZFL + hypergraphs + the live-feedback pitch. No repo yet.</dd>
+          </div>
+          <div>
+            <dt className="text-muted">CatGPT</dt>
+            <dd>Physical Phones / askcatgpt.com. Separate from Möbii³us source.</dd>
           </div>
         </dl>
       </section>

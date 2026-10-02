@@ -1,0 +1,51 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://unpkg.com https://tile.openstreetmap.org https://gibs-a.earthdata.nasa.gov https://gibs-b.earthdata.nasa.gov https://gibs-c.earthdata.nasa.gov; img-src 'self' data: https://*; connect-src 'self' https://*; style-src 'self' 'unsafe-inline' https://unpkg.com; script-src 'self' https://unpkg.com;">
+<title>Mobiiius v0.18.019 — DoinBetter</title>
+<link rel="manifest" href="/manifest.webmanifest"/>
+<link rel="stylesheet" href="/assets/styles.css"/>
+<script defer src="/assets/app.js"></script>
+</head><body>
+
+<nav>
+  <div class="logo"><img src="/assets/logo.svg" alt="Mobiiius logo"/><strong>Mobiiius v0.18.019</strong></div>
+  <div class="right small">
+    <a href="/index.html">Home</a>
+    <a href="/docs/investor.html">Investor</a>
+    <a href="/docs/engineering.html">Engineering</a>
+    <a href="/map/index.html">Live Map</a>
+    <a href="/ops/index.html">Ops</a>
+    <a href="/tools/mico.html">Mico</a>
+    <a href="/tools/timmy.html">Timmy</a>
+    <a href="/docs/pmtiles.html">PMTiles</a>
+    <a href="/stac/catalog.json">STAC</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <span class="badge">Everybody! DoinBetter!! Together!!!</span>
+    <h1>A provenance-first forecasting mesh.<br/>One fused answer per tick — plus the WHY.</h1>
+    <p>Mobiiius streams first-useful pixels via ZippyStream, stabilizes with fractional memory, and documents every decision with PROV‑O.</p>
+    <div style="display:flex;gap:12px;margin-top:16px">
+      <a class="btn" href="/map/index.html">Open Live Map</a>
+      <a class="btn secondary" href="/docs/investor.html">Investor Brief</a>
+      <a class="btn secondary" href="/docs/engineering.html">Engineering Spec</a>
+    </div>
+  </div>
+</header>
+<main class="container">
+  <div class="grid cols-3">
+    <div class="card"><div class="kpi">~30 min<small>IMERG cadence (NRT)</small></div><p>Global precip triggers.</p></div>
+    <div class="card"><div class="kpi">3 hr / 9 km<small>SMAP L4 root-zone</small></div><p>Subsurface context.</p></div>
+    <div class="card"><div class="kpi">~1 km<small>LHASA ML hazard</small></div><p>Landslide baseline.</p></div>
+  </div>
+  <h2>Progressive telemetry</h2>
+  <button id="sseStart" class="btn">Start Telemetry</button>
+  <pre id="sseOut" class="prov" style="margin-top:12px;height:160px;overflow:auto"></pre>
+</main>
+<footer class="container small">
+  <div>© 2025 DoinBetter — Mobiiius. Routing: public → DoinBetter.com • ops → DoinBetter.org</div>
+</footer>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js")}</script>
+</body></html>

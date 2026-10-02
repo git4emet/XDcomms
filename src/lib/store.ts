@@ -16,7 +16,7 @@ export type Binding = {
 };
 
 export type AlphaMode = "shared" | "split";
-export type ViewId = "bind" | "map" | "constants";
+export type ViewId = "bind" | "map" | "distill" | "constants";
 
 type CanonState = {
   bindings: Binding[];
@@ -27,6 +27,7 @@ type CanonState = {
   selectedPlatformId: PlatformId;
   sheetArtifactId: string | null;
   bind: (artifactId: string, slotId: SlotId) => void;
+  bindMany: (pairs: { artifactId: string; slotId: SlotId }[]) => number;
   unbind: (bindingId: string) => void;
   unbindArtifact: (artifactId: string) => void;
   bindSuggested: () => number;
@@ -67,6 +68,25 @@ export const useCanon = create<CanonState>()(
           ],
           sheetArtifactId: null,
         });
+      },
+      bindMany: (pairs) => {
+        let current = get().bindings;
+        const now = new Date().toISOString();
+        for (const p of pairs) {
+          const existing = current.find((b) => b.artifactId === p.artifactId);
+          const next: Binding = {
+            id: existing?.id ?? nid(),
+            artifactId: p.artifactId,
+            slotId: p.slotId,
+            boundAt: now,
+          };
+          current = [
+            ...current.filter((b) => b.artifactId !== p.artifactId),
+            next,
+          ];
+        }
+        set({ bindings: current, sheetArtifactId: null });
+        return pairs.length;
       },
       unbind: (bindingId) =>
         set({ bindings: get().bindings.filter((b) => b.id !== bindingId) }),

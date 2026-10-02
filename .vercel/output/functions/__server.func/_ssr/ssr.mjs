@@ -93,7 +93,7 @@ var HEADERS = { TSS_SHELL: "X-TSS_SHELL" };
 * the dev styles URL for route-scoped CSS collection.
 */
 async function getStartManifest(matchedRoutes) {
-	const { tsrStartManifest } = await import("../_tanstack-start-manifest_v-w2hUiVmh.mjs");
+	const { tsrStartManifest } = await import("../_tanstack-start-manifest_v-DElARdRC.mjs");
 	const startManifest = tsrStartManifest();
 	let routes = startManifest.routes;
 	routes[rootRouteId];
@@ -115,11 +115,11 @@ async function getStartManifest(matchedRoutes) {
 var manifest = {
 	"2ba6886f760597b814f13c1ddca0019c69cca2b1bdd645b91a21348821bbc387": {
 		functionName: "scanGmail_createServerFn_handler",
-		importer: () => import("./scan-eiYN6bRJ.mjs")
+		importer: () => import("./scan-Cjd1PSNe.mjs")
 	},
 	"814db6738defe8560cfa84dbe3ef09733e696b9782332b4b8bd6b36c7d5ed795": {
 		functionName: "scanDrive_createServerFn_handler",
-		importer: () => import("./scan-eiYN6bRJ.mjs")
+		importer: () => import("./scan-Cjd1PSNe.mjs")
 	}
 };
 async function getServerFnById(id, access) {
@@ -1389,7 +1389,7 @@ var getBaseManifest = getProdBaseManifest;
 var createEarlyHintsForRequest = createEarlyHintsCollector;
 async function loadEntries() {
 	const [routerEntry, startEntry, pluginAdapters] = await Promise.all([
-		import("./router-YbbdV8MF.mjs"),
+		import("./router-Cdd0MijJ.mjs"),
 		import("./start-5Z2QO8AU.mjs"),
 		import("./empty-plugin-adapters-D9UWiqvJ.mjs")
 	]);

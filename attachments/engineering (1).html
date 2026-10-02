@@ -1,0 +1,40 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://unpkg.com https://tile.openstreetmap.org https://gibs-a.earthdata.nasa.gov https://gibs-b.earthdata.nasa.gov https://gibs-c.earthdata.nasa.gov; img-src 'self' data: https://*; connect-src 'self' https://*; style-src 'self' 'unsafe-inline' https://unpkg.com; script-src 'self' https://unpkg.com;">
+<title>Engineering Spec — Mobiiius v0.18.019</title>
+<link rel="stylesheet" href="/assets/styles.css"/>
+</head><body>
+
+<nav>
+  <div class="logo"><img src="/assets/logo.svg" alt="Mobiiius logo"/><strong>Mobiiius v0.18.019</strong></div>
+  <div class="right small">
+    <a href="/index.html">Home</a>
+    <a href="/docs/investor.html">Investor</a>
+    <a href="/docs/engineering.html">Engineering</a>
+    <a href="/map/index.html">Live Map</a>
+    <a href="/ops/index.html">Ops</a>
+    <a href="/tools/mico.html">Mico</a>
+    <a href="/tools/timmy.html">Timmy</a>
+    <a href="/docs/pmtiles.html">PMTiles</a>
+    <a href="/stac/catalog.json">STAC</a>
+  </div>
+</nav>
+
+<main class="container">
+  <h1>Engineering Specification — v0.18.019</h1>
+  <div class="card"><h3>Architecture</h3>
+  <ul>
+    <li>Ingest: GIBS (IMERG visuals), IMERG quantitative; SMAP L3/L4; LHASA 2.x; USGS 00060; NWS CAP/IPAWS.</li>
+    <li>Catalogs: STAC; rasters as COG; serverless via PMTiles.</li>
+    <li>Compute: fractional memory (Caputo), DI/envelopes, online Hedge consensus.</li>
+    <li>Streaming: SSE; Push: Web Push (VAPID); Transport: QUIC/HTTP-3, MPTCP optional; FEC on p99&gt;1s.</li>
+    <li>Integrity: CRC-32 + Reed–Solomon; Provenance: PROV-O bundle (FART).</li>
+  </ul></div>
+  <div class="card"><h3>Repro harness</h3>
+    <p>Run the <a href="/sim/index.html">/v1/sim</a> harness to reproduce toy RMSE (100-run seed sweep).</p>
+  </div>
+  <div class="card"><h3>Docs</h3>
+    <p><a href="/api/openapi.yaml">OpenAPI</a> • <a href="/postman/DoinBetter-Mobiiius.postman_collection.json">Postman</a> • <a href="/docs/pmtiles.html">PMTiles</a> • <a href="/stac/catalog.json">STAC</a></p>
+  </div>
+</main>
+</body></html>
