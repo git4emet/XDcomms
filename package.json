@@ -18,7 +18,9 @@
     "check:auth": "node scripts/check-auth-invariant.mjs",
     "test": "node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/app-data/app-data.test.ts src/lib/auth/gate-identity.test.ts",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test:providers": "node --experimental-strip-types --test services/providers/golden-client.test.ts",
+    "check:contracts": "node scripts/check-shared-contract.mjs"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.4",
