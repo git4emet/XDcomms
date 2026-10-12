@@ -14,3 +14,4 @@ jobs:
           node-version: '24'
       - run: npm run check:contracts
       - run: npm run test:providers
+      - run: node --experimental-strip-types --test services/providers/connection-cascade.test.ts
