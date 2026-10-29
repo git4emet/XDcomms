@@ -1,0 +1,16 @@
+{
+  "repository": "git4emet/systemsNxXD",
+  "commit": "5901da5f66de5c5caaca08936b10e6e15e006f66",
+  "files": [
+    {
+      "source_path": "packages/contracts/golden-event.ts",
+      "local_path": "services/providers/_upstream/golden-event.ts",
+      "sha256": "83e1611d5a2b248be335374536fd7e4b03a80069e50f0dac40dc7727089b12f1"
+    },
+    {
+      "source_path": "packages/contracts/fixtures/python-golden-event.json",
+      "local_path": "services/providers/_upstream/python-golden-event.json",
+      "sha256": "4ca7a7a0619f1a9794c6c5092317738d8adc86c7f9917a2d0084d3ef6bcd41c2"
+    }
+  ]
+}
